@@ -4,11 +4,9 @@ import android.annotation.SuppressLint
 import android.location.Location
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class LocationViewModel : ViewModel() {
     var fusedLocationClient: FusedLocationProviderClient? = null
@@ -36,36 +34,25 @@ class LocationViewModel : ViewModel() {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.lastLocation?.let { location ->
                     _locationState.value = "Lat: ${location.latitude}, Lng: ${location.longitude}"
-                    Log.d("LocationTracking", "Updated Location: ${location.latitude}, ${location.longitude}")
                 }
             }
         }
     }
 
     @SuppressLint("MissingPermission")
-    private fun startLocationUpdates() {
-        if (_isTracking.value) {
-            fusedLocationClient?.requestLocationUpdates(locationRequest, locationCallback!!, null)
-            Log.d("LocationTracking", "Tracking started")
-        }
-    }
-
-    private fun stopLocationUpdates() {
-        fusedLocationClient?.removeLocationUpdates(locationCallback!!)
-        Log.d("LocationTracking", "Tracking stopped")
-    }
-
     fun toggleTracking() {
         _isTracking.value = !_isTracking.value
         if (_isTracking.value) {
-            startLocationUpdates()
+            fusedLocationClient?.requestLocationUpdates(locationRequest, locationCallback!!, null)
+            Log.d("LocationTracking", "Tracking started")
         } else {
-            stopLocationUpdates()
+            fusedLocationClient?.removeLocationUpdates(locationCallback!!)
+            Log.d("LocationTracking", "Tracking stopped")
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        stopLocationUpdates()
+        fusedLocationClient?.removeLocationUpdates(locationCallback!!)
     }
 }

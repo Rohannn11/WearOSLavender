@@ -1,5 +1,6 @@
 package com.example.lavender.presentation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
@@ -9,12 +10,13 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.wear.compose.material.*
-import androidx.wear.compose.material3.IconButton
 
 @Composable
 fun ContactsScreen(
@@ -38,20 +40,31 @@ fun ContactsScreen(
         timeText = { TimeText() }
     ) {
         ScalingLazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black),  // Background for better readability
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                    Button(
+                        onClick = onBack,
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Cyan),
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(Icons.Default.ArrowBack, "Back", tint = Color.Black)
                     }
-                    IconButton(onClick = { showAddContact = true }) {
-                        Icon(Icons.Default.Add, "Add Contact")
+
+                    Button(
+                        onClick = { showAddContact = true },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green),
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(Icons.Default.Add, "Add Contact", tint = Color.Black)
                     }
                 }
             }
@@ -59,9 +72,11 @@ fun ContactsScreen(
             if (contacts.isEmpty()) {
                 item {
                     Text(
-                        "No emergency contacts added",
+                        text = "No emergency contacts added",
                         modifier = Modifier.padding(16.dp),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = Color.White,
+                        fontSize = 16.sp
                     )
                 }
             }
@@ -86,6 +101,7 @@ fun ContactCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
+            .background(Color.DarkGray)
     ) {
         Row(
             modifier = Modifier
@@ -95,14 +111,15 @@ fun ContactCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(contact.name, style = MaterialTheme.typography.title3)
-                Text(contact.phoneNumber, style = MaterialTheme.typography.body2)
+                Text(contact.name, color = Color.White, fontSize = 16.sp)
+                Text(contact.phoneNumber, color = Color.Cyan, fontSize = 14.sp)
             }
-            IconButton(
+            Button(
                 onClick = onDelete,
-                modifier = Modifier.size(24.dp)
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+                modifier = Modifier.size(40.dp)
             ) {
-                Icon(Icons.Default.Delete, "Delete contact")
+                Icon(Icons.Default.Delete, "Delete contact", tint = Color.White)
             }
         }
     }
@@ -120,43 +137,51 @@ fun AddContactDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
     ) {
-        Card(
-            onClick = {}, // Add an empty or meaningful onClick action
+        Box( // Wrap Card inside Box for background color
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-        )
- {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                .background(Color.DarkGray) // ✅ Correctly applies background color
+        ) {
+            Card(
+                onClick = {},
+                modifier = Modifier.fillMaxWidth()
             ) {
-                TextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Name") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                TextField(
-                    value = phone,
-                    onValueChange = { phone = it },
-                    label = { Text("Phone") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Button(onClick = onDismiss) {
-                        Text("Cancel")
-                    }
-                    Button(
-                        onClick = { onAdd(name, phone) },
-                        enabled = name.isNotBlank() && phone.isNotBlank()
+                    TextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Name") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TextField(
+                        value = phone,
+                        onValueChange = { phone = it },
+                        label = { Text("Phone") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Text("Add")
+                        Button(
+                            onClick = onDismiss,
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Gray)
+                        ) {
+                            Text("Cancel", color = Color.White)
+                        }
+                        Button(
+                            onClick = { onAdd(name, phone) },
+                            enabled = name.isNotBlank() && phone.isNotBlank(),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green)
+                        ) {
+                            Text("Add", color = Color.Black)
+                        }
                     }
                 }
             }

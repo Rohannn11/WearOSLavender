@@ -102,7 +102,6 @@ fun AlertCard(alertText: String) {
     }
 }
 
-
 @Composable
 fun MainScreen(
     onShowAlerts: () -> Unit,

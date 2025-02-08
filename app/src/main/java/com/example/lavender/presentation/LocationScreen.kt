@@ -1,23 +1,20 @@
 package com.example.lavender.presentation
+
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.compose.material.*
-import androidx.wear.compose.material.ButtonDefaults
-import androidx.wear.compose.material3.Text
-import kotlinx.coroutines.launch
-import androidx.wear.compose.material3.Button
-import androidx.wear.compose.material3.MaterialTheme
 
 @Composable
 fun LocationScreen(viewModel: LocationViewModel, onBack: () -> Unit) {
@@ -26,13 +23,18 @@ fun LocationScreen(viewModel: LocationViewModel, onBack: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.Black)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Current Location:", fontSize = 18.sp)
+        Text(
+            text = "Current Location",
+            fontSize = 18.sp,
+            color = Color.White
+        )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = location, fontSize = 16.sp)
+        Text(text = location, fontSize = 16.sp, color = Color.Cyan)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -40,16 +42,28 @@ fun LocationScreen(viewModel: LocationViewModel, onBack: () -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CustomButton(
-                text = "Refresh", // ✅ Added text parameter
+            CircularButton(
                 icon = Icons.Default.LocationOn,
-                onClick = { viewModel.initialize(viewModel.fusedLocationClient!!) }
+                onClick = { viewModel.toggleTracking() },
+                contentDescription = "Start Tracking"
             )
-            CustomButton(
-                text = "Back", // ✅ Added text parameter
+            CircularButton(
                 icon = Icons.Default.Warning,
-                onClick = onBack
+                onClick = onBack,
+                contentDescription = "Back"
             )
         }
+    }
+}
+
+@Composable
+fun CircularButton(icon: ImageVector, onClick: () -> Unit, contentDescription: String) {
+    Button(
+        onClick = onClick,
+        shape = CircleShape,
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Cyan),
+        modifier = Modifier.size(48.dp)
+    ) {
+        Icon(imageVector = icon, contentDescription = contentDescription, tint = Color.Black)
     }
 }
