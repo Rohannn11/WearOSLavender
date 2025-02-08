@@ -10,7 +10,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.location.LocationServices
 
 class MainActivity : ComponentActivity() {
@@ -19,6 +18,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var contactsViewModel: ContactsViewModel
     private lateinit var panicModeViewModel: PanicModeViewModel
     private lateinit var heartRateViewModel: HeartRateViewModel
+    private lateinit var speedTrackingViewModel: SpeedTrackingViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +31,7 @@ class MainActivity : ComponentActivity() {
         panicModeViewModel = ViewModelProvider(this)[PanicModeViewModel::class.java]
         contactsViewModel = ViewModelProvider(this, contactsViewModelFactory)[ContactsViewModel::class.java]
         heartRateViewModel = ViewModelProvider(this, AndroidViewModelFactory(application))[HeartRateViewModel::class.java]
+        speedTrackingViewModel = ViewModelProvider(this)[SpeedTrackingViewModel::class.java]
 
         locationViewModel.fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -42,7 +43,8 @@ class MainActivity : ComponentActivity() {
                 sosViewModel = sosViewModel,
                 contactsViewModel = contactsViewModel,
                 panicModeViewModel = panicModeViewModel,
-                heartRateViewModel = heartRateViewModel // ✅ Passing HeartRateViewModel
+                heartRateViewModel = heartRateViewModel,
+                speedTrackingViewModel = speedTrackingViewModel
             )
         }
     }
@@ -52,7 +54,7 @@ class MainActivity : ComponentActivity() {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_BACKGROUND_LOCATION,
             Manifest.permission.SEND_SMS,
-            Manifest.permission.BODY_SENSORS // ✅ Required for Heart Rate Monitoring
+            Manifest.permission.BODY_SENSORS
         )
 
         val permissionsToRequest = requiredPermissions.filter {

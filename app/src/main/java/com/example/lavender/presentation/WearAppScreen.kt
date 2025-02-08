@@ -5,10 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContactPhone
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -22,15 +19,14 @@ import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.material.*
 import androidx.wear.compose.material3.IconButton
-
-
 @Composable
 fun WearAppScreen(
     locationViewModel: LocationViewModel,
     sosViewModel: SOSViewModel,
     contactsViewModel: ContactsViewModel,
     panicModeViewModel: PanicModeViewModel,
-    heartRateViewModel: HeartRateViewModel // Fixed: Correct type annotation
+    heartRateViewModel: HeartRateViewModel,
+    speedTrackingViewModel: SpeedTrackingViewModel
 ) {
     var showLocation by remember { mutableStateOf(false) }
     var showAlerts by remember { mutableStateOf(false) }
@@ -50,7 +46,8 @@ fun WearAppScreen(
             locationViewModel = locationViewModel,
             sosViewModel = sosViewModel,
             panicModeViewModel = panicModeViewModel,
-            heartRateViewModel = heartRateViewModel, // Added this
+            heartRateViewModel = heartRateViewModel,
+            speedTrackingViewModel = speedTrackingViewModel,
             currentLocation = location,
             contactsViewModel = contactsViewModel,
             isTracking = isTracking
@@ -120,6 +117,7 @@ fun MainScreen(
     sosViewModel: SOSViewModel,
     panicModeViewModel: PanicModeViewModel,
     heartRateViewModel: HeartRateViewModel,
+    speedTrackingViewModel: SpeedTrackingViewModel,
     currentLocation: String,
     isTracking: Boolean,
     contactsViewModel: ContactsViewModel
@@ -128,12 +126,25 @@ fun MainScreen(
     val heartRate by heartRateViewModel.heartRate.observeAsState(initial = 0f)
     val alertMessage by heartRateViewModel.alertMessage.observeAsState()
 
+    val currentSpeed by speedTrackingViewModel.currentSpeed.collectAsState()
+    val speedAlert by speedTrackingViewModel.speedAlert.collectAsState()
+    val alertCount by speedTrackingViewModel.alertCount.collectAsState()
+
     var isHeartRateTracking by remember { mutableStateOf(false) }
+    var isSpeedTracking by remember { mutableStateOf(false) }
+
+    // Monitor alert count and trigger SOS
+    LaunchedEffect(alertCount) {
+        if (alertCount >= 3) {
+            sosViewModel.initiateSOSSequence(currentLocation)
+            speedTrackingViewModel.resetAlertCount()
+        }
+    }
 
     Scaffold(
         timeText = { TimeText() },
-        modifier = Modifier.background(Color.Black) // Set full black background
-    )  {
+        modifier = Modifier.background(Color.Black)
+    ) {
         ScalingLazyColumn(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -195,7 +206,6 @@ fun MainScreen(
                 )
             }
 
-            // Display alert message if heart rate is abnormal
             alertMessage?.let {
                 item {
                     Text(
@@ -222,10 +232,59 @@ fun MainScreen(
                     }
                 )
             }
+
+            // Speed Tracking Section
+            item {
+                Text(
+                    text = "Current Speed: ${String.format("%.1f", currentSpeed)} mph",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+
+            speedAlert?.let {
+                item {
+                    Text(
+                        text = it,
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
+
+            item {
+                Text(
+                    text = "Alert Count: $alertCount/3",
+                    color = if (alertCount > 1) Color.Red else Color.White,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(4.dp)
+                )
+            }
+
+            item {
+                CustomButton(
+                    text = if (isSpeedTracking) "Stop Speed Tracking" else "Start Speed Tracking",
+                    icon = Icons.Default.Speed,
+                    onClick = {
+                        if (isSpeedTracking) {
+                            speedTrackingViewModel.stopSpeedTracking()
+                        } else {
+                            speedTrackingViewModel.startSpeedTracking()
+                        }
+                        isSpeedTracking = !isSpeedTracking
+                        Toast.makeText(
+                            context,
+                            if (isSpeedTracking) "Speed tracking started" else "Speed tracking stopped",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                )
+            }
         }
     }
 }
-
 
 @Composable
 fun CustomButton(text: String, icon: ImageVector, onClick: () -> Unit) {
@@ -236,7 +295,7 @@ fun CustomButton(text: String, icon: ImageVector, onClick: () -> Unit) {
             .height(50.dp),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color.Gray, // Updated to gray
+            backgroundColor = Color.Gray,
         )
     ) {
         Row(
@@ -247,13 +306,13 @@ fun CustomButton(text: String, icon: ImageVector, onClick: () -> Unit) {
                 imageVector = icon,
                 contentDescription = null,
                 tint = Color.White
-            ) // Ensure icons are white
+            )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = text,
                 color = Color.White,
                 fontSize = 16.sp
-            ) // Changed text to white for visibility
+            )
         }
     }
 }

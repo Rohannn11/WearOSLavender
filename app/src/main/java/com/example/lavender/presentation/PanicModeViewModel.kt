@@ -3,6 +3,9 @@ package com.example.lavender.presentation
 import android.content.Context
 import android.media.MediaPlayer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.*
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -11,14 +14,35 @@ class PanicModeViewModel : ViewModel() {
     val isPanicActive: StateFlow<Boolean> = _isPanicActive
 
     private var mediaPlayer: MediaPlayer? = null
+    private var panicJob: Job? = null
+    private var isCancelled = false
 
     fun togglePanicMode(context: Context) {
         if (_isPanicActive.value) {
             stopAlarm()
+            _isPanicActive.value = false
         } else {
-            startAlarm(context)
+            initiatePanicCountdown(context)
         }
-        _isPanicActive.value = !_isPanicActive.value
+    }
+
+    private fun initiatePanicCountdown(context: Context) {
+        isCancelled = false
+        panicJob?.cancel()  // Cancel any existing countdown
+
+        panicJob = viewModelScope.launch {
+            delay(3000) // 3-second delay before activation
+
+            if (!isCancelled) {
+                _isPanicActive.value = true
+                startAlarm(context)
+            }
+        }
+    }
+
+    fun cancelPanic() {
+        isCancelled = true
+        panicJob?.cancel()
     }
 
     private fun startAlarm(context: Context) {
