@@ -3,7 +3,6 @@ package com.example.lavender.presentation
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,24 +14,29 @@ import com.google.android.gms.location.LocationServices
 class MainActivity : ComponentActivity() {
     private lateinit var locationViewModel: LocationViewModel
     private lateinit var sosViewModel: SOSViewModel
+    private lateinit var contactsViewModel: ContactsViewModel  // Add ContactsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val contactManager = EmergencyContactManager(this) // Ensure it's properly initialized
+        val contactsViewModelFactory = ContactsViewModelFactory(contactManager)
+
         locationViewModel = ViewModelProvider(this)[LocationViewModel::class.java]
         sosViewModel = ViewModelProvider(this)[SOSViewModel::class.java]
+        contactsViewModel = ViewModelProvider(this, contactsViewModelFactory)[ContactsViewModel::class.java] // Use factory
 
         locationViewModel.fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         requestPermissions()
 
         setContent {
-            WearAppScreen(locationViewModel, sosViewModel)
+            WearAppScreen(locationViewModel, sosViewModel, contactsViewModel) // Pass it to UI if needed
         }
     }
 
     private fun requestPermissions() {
-        val requiredPermissions = mutableListOf(
+        val requiredPermissions = listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_BACKGROUND_LOCATION,
             Manifest.permission.SEND_SMS

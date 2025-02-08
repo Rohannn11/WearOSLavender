@@ -28,6 +28,7 @@ accessibilityTestFramework = "4.1.1"
 playServicesLocation = "21.3.0"
 compiler = "3.2.0-alpha11"
 
+
 [libraries]
 androidx-compose-foundation-v140 = { module = "androidx.wear.compose:compose-foundation", version.ref = "composeFoundationVersion" }
 androidx-compose-material3 = { module = "androidx.wear.compose:compose-material3", version.ref = "composeMaterial3" }

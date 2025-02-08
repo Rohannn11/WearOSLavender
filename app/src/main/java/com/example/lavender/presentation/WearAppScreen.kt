@@ -1,19 +1,18 @@
 package com.example.lavender.presentation
 
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContactPhone
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
@@ -24,26 +23,29 @@ import androidx.wear.compose.material3.IconButton
 @Composable
 fun WearAppScreen(
     locationViewModel: LocationViewModel,
-    sosViewModel: SOSViewModel
+    sosViewModel: SOSViewModel,
+    contactsViewModel: ContactsViewModel
 ) {
     var showLocation by remember { mutableStateOf(false) }
     var showAlerts by remember { mutableStateOf(false) }
+    var showContacts by remember { mutableStateOf(false) }
+
     val location by locationViewModel.locationState.collectAsState()
     val isTracking by locationViewModel.isTracking.collectAsState()
-
-    val context = LocalContext.current // ✅ Get Context without passing it explicitly
 
     when {
         showAlerts -> AlertScreen { showAlerts = false }
         showLocation -> LocationScreen(locationViewModel) { showLocation = false }
+        showContacts -> ContactsScreen(contactsViewModel) { showContacts = false }
         else -> MainScreen(
             onShowAlerts = { showAlerts = true },
             onShowLocation = { showLocation = true },
+            onShowContacts = { showContacts = true },
             locationViewModel = locationViewModel,
             sosViewModel = sosViewModel,
             currentLocation = location,
-            isTracking = isTracking,
-            context = context // ✅ Pass obtained context
+            contactsViewModel = contactsViewModel,
+            isTracking = isTracking
         )
     }
 }
@@ -101,82 +103,87 @@ fun AlertCard(alertText: String) {
 }
 
 
-
 @Composable
 fun MainScreen(
     onShowAlerts: () -> Unit,
     onShowLocation: () -> Unit,
+    onShowContacts: () -> Unit,
     locationViewModel: LocationViewModel,
     sosViewModel: SOSViewModel,
     currentLocation: String,
     isTracking: Boolean,
-    context: Context // ✅ No more missing context error
+    contactsViewModel: ContactsViewModel
 ) {
+    val context = LocalContext.current
+
     Scaffold(
         timeText = { TimeText() }
     ) {
-        Column(
+        ScalingLazyColumn(
             modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // SOS Button at the top
-            SOSButton(
-                viewModel = sosViewModel,
-                currentLocation = currentLocation,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            // Location Tracking Toggle
-            Button(
-                onClick = {
-                    locationViewModel.toggleTracking()
-                    val message = if (isTracking) "Tracking Stopped" else "Tracking Started"
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show() // ✅ Now works
-                },
-                modifier = Modifier.padding(vertical = 4.dp),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = MaterialTheme.colors.primary
-                )
-            ) {
-                Text(
-                    text = if (isTracking) "Stop Tracking" else "Start Tracking",
-                    textAlign = TextAlign.Center
+            item {
+                SOSButton(
+                    viewModel = sosViewModel,
+                    currentLocation = currentLocation,
+                    modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
 
-            // Original alert and location buttons
-            CircularButton(
-                icon = Icons.Default.Warning,
-                onClick = onShowAlerts,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
+            item {
+                CustomButton(
+                    text = if (isTracking) "Stop Tracking" else "Start Tracking",
+                    icon = Icons.Default.LocationOn,
+                    onClick = {
+                        locationViewModel.toggleTracking()
+                        Toast.makeText(
+                            context,
+                            if (isTracking) "Tracking stopped" else "Tracking started",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                )
+            }
 
-            CircularButton(
-                icon = Icons.Default.LocationOn,
-                onClick = onShowLocation,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
+            item {
+                CustomButton(
+                    text = "Contacts",
+                    icon = Icons.Default.ContactPhone,
+                    onClick = onShowContacts
+                )
+            }
+
+            item {
+                CustomButton(
+                    text = "Alerts",
+                    icon = Icons.Default.Warning,
+                    onClick = onShowAlerts
+                )
+            }
         }
     }
 }
 
 @Composable
-fun CircularButton(
-    icon: ImageVector,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun CustomButton(text: String, icon: ImageVector, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        modifier = modifier.size(50.dp),
-        shape = RoundedCornerShape(25.dp),
-        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier.size(24.dp)
+        modifier = Modifier
+            .fillMaxWidth(0.8f)
+            .height(50.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color(0xFF6200EA) // Consistent button color
         )
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(imageVector = icon, contentDescription = null, tint = Color.White)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = text, color = Color.White, fontSize = 16.sp)
+        }
     }
 }

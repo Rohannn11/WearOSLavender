@@ -40,15 +40,16 @@ fun LocationScreen(viewModel: LocationViewModel, onBack: () -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CircularButton(
+            CustomButton(
+                text = "Refresh", // ✅ Added text parameter
                 icon = Icons.Default.LocationOn,
-                onClick = {
-                    viewModel.initialize(viewModel.fusedLocationClient!!)
-                }
+                onClick = { viewModel.initialize(viewModel.fusedLocationClient!!) }
             )
-            CircularButton(icon = Icons.Default.Warning, onClick = onBack)
+            CustomButton(
+                text = "Back", // ✅ Added text parameter
+                icon = Icons.Default.Warning,
+                onClick = onBack
+            )
         }
     }
 }
-
-

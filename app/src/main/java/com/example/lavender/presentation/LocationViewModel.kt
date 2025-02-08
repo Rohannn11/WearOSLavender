@@ -20,50 +20,52 @@ class LocationViewModel : ViewModel() {
     private val _isTracking = MutableStateFlow(false)
     val isTracking: StateFlow<Boolean> = _isTracking
 
+    private val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000)
+        .setMinUpdateIntervalMillis(1000)
+        .setMaxUpdateDelayMillis(5000)
+        .build()
+
     @SuppressLint("MissingPermission")
     fun initialize(fusedLocationClient: FusedLocationProviderClient) {
         this.fusedLocationClient = fusedLocationClient
-        startLocationUpdates()
+        setupLocationCallback()
     }
 
-    @SuppressLint("MissingPermission")
-    private fun startLocationUpdates() {
-        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000)
-            .setMinUpdateIntervalMillis(1000)
-            .setMaxUpdateDelayMillis(5000)
-            .build()
-
+    private fun setupLocationCallback() {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.lastLocation?.let { location ->
                     _locationState.value = "Lat: ${location.latitude}, Lng: ${location.longitude}"
-                    if (_isTracking.value) {
-                        saveLocationUpdate(location)
-                    }
+                    Log.d("LocationTracking", "Updated Location: ${location.latitude}, ${location.longitude}")
                 }
             }
         }
-
-        fusedLocationClient?.requestLocationUpdates(locationRequest, locationCallback!!, null)
     }
 
-    private fun saveLocationUpdate(location: Location) {
-        viewModelScope.launch {
-            // Implement location saving to Room database or remote server
-            Log.d("LocationTracking", "Location saved: ${location.latitude}, ${location.longitude}")
+    @SuppressLint("MissingPermission")
+    private fun startLocationUpdates() {
+        if (_isTracking.value) {
+            fusedLocationClient?.requestLocationUpdates(locationRequest, locationCallback!!, null)
+            Log.d("LocationTracking", "Tracking started")
         }
+    }
+
+    private fun stopLocationUpdates() {
+        fusedLocationClient?.removeLocationUpdates(locationCallback!!)
+        Log.d("LocationTracking", "Tracking stopped")
     }
 
     fun toggleTracking() {
         _isTracking.value = !_isTracking.value
+        if (_isTracking.value) {
+            startLocationUpdates()
+        } else {
+            stopLocationUpdates()
+        }
     }
 
     override fun onCleared() {
         super.onCleared()
         stopLocationUpdates()
-    }
-
-    private fun stopLocationUpdates() {
-        locationCallback?.let { fusedLocationClient?.removeLocationUpdates(it) }
     }
 }
