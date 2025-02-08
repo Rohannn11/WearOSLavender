@@ -1,6 +1,7 @@
 package com.example.lavender.presentation
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -130,8 +131,9 @@ fun MainScreen(
     var isHeartRateTracking by remember { mutableStateOf(false) }
 
     Scaffold(
-        timeText = { TimeText() }
-    ) {
+        timeText = { TimeText() },
+        modifier = Modifier.background(Color.Black) // Set full black background
+    )  {
         ScalingLazyColumn(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -234,16 +236,24 @@ fun CustomButton(text: String, icon: ImageVector, onClick: () -> Unit) {
             .height(50.dp),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color(0x40E0D0FF), // Consistent button color
+            backgroundColor = Color.Gray, // Updated to gray
         )
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Icon(imageVector = icon, contentDescription = null, tint = Color.White)
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = Color.White
+            ) // Ensure icons are white
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = text, color = Color.Black, fontSize = 16.sp)
+            Text(
+                text = text,
+                color = Color.White,
+                fontSize = 16.sp
+            ) // Changed text to white for visibility
         }
     }
 }
