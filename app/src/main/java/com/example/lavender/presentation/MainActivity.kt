@@ -9,13 +9,16 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.location.LocationServices
 
 class MainActivity : ComponentActivity() {
     private lateinit var locationViewModel: LocationViewModel
     private lateinit var sosViewModel: SOSViewModel
     private lateinit var contactsViewModel: ContactsViewModel
-    private lateinit var panicModeViewModel: PanicModeViewModel // Add this
+    private lateinit var panicModeViewModel: PanicModeViewModel
+    private lateinit var heartRateViewModel: HeartRateViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,9 +28,9 @@ class MainActivity : ComponentActivity() {
 
         locationViewModel = ViewModelProvider(this)[LocationViewModel::class.java]
         sosViewModel = ViewModelProvider(this)[SOSViewModel::class.java]
+        panicModeViewModel = ViewModelProvider(this)[PanicModeViewModel::class.java]
         contactsViewModel = ViewModelProvider(this, contactsViewModelFactory)[ContactsViewModel::class.java]
-
-        panicModeViewModel = ViewModelProvider(this)[PanicModeViewModel::class.java] // Initialize it
+        heartRateViewModel = ViewModelProvider(this, AndroidViewModelFactory(application))[HeartRateViewModel::class.java]
 
         locationViewModel.fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -38,7 +41,8 @@ class MainActivity : ComponentActivity() {
                 locationViewModel = locationViewModel,
                 sosViewModel = sosViewModel,
                 contactsViewModel = contactsViewModel,
-                panicModeViewModel = panicModeViewModel // Pass it here
+                panicModeViewModel = panicModeViewModel,
+                heartRateViewModel = heartRateViewModel // ✅ Passing HeartRateViewModel
             )
         }
     }
@@ -47,7 +51,8 @@ class MainActivity : ComponentActivity() {
         val requiredPermissions = listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-            Manifest.permission.SEND_SMS
+            Manifest.permission.SEND_SMS,
+            Manifest.permission.BODY_SENSORS // ✅ Required for Heart Rate Monitoring
         )
 
         val permissionsToRequest = requiredPermissions.filter {

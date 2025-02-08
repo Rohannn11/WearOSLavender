@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContactPhone
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,7 +28,8 @@ fun WearAppScreen(
     locationViewModel: LocationViewModel,
     sosViewModel: SOSViewModel,
     contactsViewModel: ContactsViewModel,
-    panicModeViewModel: PanicModeViewModel  // Added PanicModeViewModel
+    panicModeViewModel: PanicModeViewModel,
+    heartRateViewModel: HeartRateViewModel // Fixed: Correct type annotation
 ) {
     var showLocation by remember { mutableStateOf(false) }
     var showAlerts by remember { mutableStateOf(false) }
@@ -45,7 +48,8 @@ fun WearAppScreen(
             onShowContacts = { showContacts = true },
             locationViewModel = locationViewModel,
             sosViewModel = sosViewModel,
-            panicModeViewModel = panicModeViewModel, // Added PanicModeViewModel
+            panicModeViewModel = panicModeViewModel,
+            heartRateViewModel = heartRateViewModel, // Added this
             currentLocation = location,
             contactsViewModel = contactsViewModel,
             isTracking = isTracking
@@ -113,12 +117,17 @@ fun MainScreen(
     onShowContacts: () -> Unit,
     locationViewModel: LocationViewModel,
     sosViewModel: SOSViewModel,
-    panicModeViewModel: PanicModeViewModel, // Added PanicModeViewModel
+    panicModeViewModel: PanicModeViewModel,
+    heartRateViewModel: HeartRateViewModel,
     currentLocation: String,
     isTracking: Boolean,
     contactsViewModel: ContactsViewModel
 ) {
     val context = LocalContext.current
+    val heartRate by heartRateViewModel.heartRate.observeAsState(initial = 0f)
+    val alertMessage by heartRateViewModel.alertMessage.observeAsState()
+
+    var isHeartRateTracking by remember { mutableStateOf(false) }
 
     Scaffold(
         timeText = { TimeText() }
@@ -136,7 +145,7 @@ fun MainScreen(
             }
 
             item {
-                PanicModeButton( // Panic Mode button is now used
+                PanicModeButton(
                     viewModel = panicModeViewModel,
                     context = context,
                     modifier = Modifier.padding(vertical = 4.dp)
@@ -173,9 +182,48 @@ fun MainScreen(
                     onClick = onShowAlerts
                 )
             }
+
+            // Heart Rate Section
+            item {
+                Text(
+                    text = "Heart Rate: ${heartRate.toInt()} BPM",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+
+            // Display alert message if heart rate is abnormal
+            alertMessage?.let {
+                item {
+                    Text(
+                        text = it,
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
+
+            item {
+                CustomButton(
+                    text = if (isHeartRateTracking) "Stop Heart Rate" else "Start Heart Rate",
+                    icon = Icons.Default.Favorite,
+                    onClick = {
+                        heartRateViewModel.toggleHeartRateMonitoring()
+                        isHeartRateTracking = !isHeartRateTracking
+                        Toast.makeText(
+                            context,
+                            if (isHeartRateTracking) "Heart Rate Monitoring Started" else "Heart Rate Monitoring Stopped",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                )
+            }
         }
     }
 }
+
 
 @Composable
 fun CustomButton(text: String, icon: ImageVector, onClick: () -> Unit) {
@@ -186,7 +234,7 @@ fun CustomButton(text: String, icon: ImageVector, onClick: () -> Unit) {
             .height(50.dp),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color(0xFF6200EA) // Consistent button color
+            backgroundColor = Color(0x40E0D0FF), // Consistent button color
         )
     ) {
         Row(
@@ -195,7 +243,7 @@ fun CustomButton(text: String, icon: ImageVector, onClick: () -> Unit) {
         ) {
             Icon(imageVector = icon, contentDescription = null, tint = Color.White)
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = text, color = Color.White, fontSize = 16.sp)
+            Text(text = text, color = Color.Black, fontSize = 16.sp)
         }
     }
 }

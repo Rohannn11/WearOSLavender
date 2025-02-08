@@ -27,6 +27,7 @@ coreSplashscreen = "1.0.1"
 accessibilityTestFramework = "4.1.1"
 playServicesLocation = "21.3.0"
 compiler = "3.2.0-alpha11"
+runtimeLivedata = "1.7.7"
 
 
 [libraries]
@@ -64,6 +65,7 @@ core-splashscreen = { group = "androidx.core", name = "core-splashscreen", versi
 accessibility-test-framework = { group = "com.google.android.apps.common.testing.accessibility.framework", name = "accessibility-test-framework", version.ref = "accessibilityTestFramework" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 androidx-compiler = { group = "androidx.databinding", name = "compiler", version.ref = "compiler" }
+androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
