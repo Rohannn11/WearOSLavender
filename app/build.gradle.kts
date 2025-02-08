@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.core.splashscreen)
     implementation(libs.accessibility.test.framework)
     implementation(libs.play.services.location)
+    implementation(libs.androidx.compiler)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)

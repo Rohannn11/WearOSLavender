@@ -26,6 +26,7 @@ activityCompose = "1.10.0"
 coreSplashscreen = "1.0.1"
 accessibilityTestFramework = "4.1.1"
 playServicesLocation = "21.3.0"
+compiler = "3.2.0-alpha11"
 
 [libraries]
 androidx-compose-foundation-v140 = { module = "androidx.wear.compose:compose-foundation", version.ref = "composeFoundationVersion" }
@@ -61,6 +62,7 @@ activity-compose = { group = "androidx.activity", name = "activity-compose", ver
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 accessibility-test-framework = { group = "com.google.android.apps.common.testing.accessibility.framework", name = "accessibility-test-framework", version.ref = "accessibilityTestFramework" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+androidx-compiler = { group = "androidx.databinding", name = "compiler", version.ref = "compiler" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
