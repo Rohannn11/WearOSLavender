@@ -14,24 +14,32 @@ import com.google.android.gms.location.LocationServices
 class MainActivity : ComponentActivity() {
     private lateinit var locationViewModel: LocationViewModel
     private lateinit var sosViewModel: SOSViewModel
-    private lateinit var contactsViewModel: ContactsViewModel  // Add ContactsViewModel
+    private lateinit var contactsViewModel: ContactsViewModel
+    private lateinit var panicModeViewModel: PanicModeViewModel // Add this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val contactManager = EmergencyContactManager(this) // Ensure it's properly initialized
+        val contactManager = EmergencyContactManager(this)
         val contactsViewModelFactory = ContactsViewModelFactory(contactManager)
 
         locationViewModel = ViewModelProvider(this)[LocationViewModel::class.java]
         sosViewModel = ViewModelProvider(this)[SOSViewModel::class.java]
-        contactsViewModel = ViewModelProvider(this, contactsViewModelFactory)[ContactsViewModel::class.java] // Use factory
+        contactsViewModel = ViewModelProvider(this, contactsViewModelFactory)[ContactsViewModel::class.java]
+
+        panicModeViewModel = ViewModelProvider(this)[PanicModeViewModel::class.java] // Initialize it
 
         locationViewModel.fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         requestPermissions()
 
         setContent {
-            WearAppScreen(locationViewModel, sosViewModel, contactsViewModel) // Pass it to UI if needed
+            WearAppScreen(
+                locationViewModel = locationViewModel,
+                sosViewModel = sosViewModel,
+                contactsViewModel = contactsViewModel,
+                panicModeViewModel = panicModeViewModel // Pass it here
+            )
         }
     }
 

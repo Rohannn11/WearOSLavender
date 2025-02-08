@@ -1,11 +1,11 @@
 package com.example.lavender.presentation
+
 import android.telephony.SmsManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -19,6 +19,8 @@ class SOSViewModel : ViewModel() {
         EmergencyContact("Emergency Contact", "+1122334455")
     )
 
+    private var sosJob: Job? = null // 🔹 Job reference for cancellation
+
     sealed class SOSState {
         data object Idle : SOSState()
         data class Confirming(val remainingSeconds: Int) : SOSState()
@@ -28,9 +30,9 @@ class SOSViewModel : ViewModel() {
     }
 
     fun initiateSOSSequence(currentLocation: String) {
-        viewModelScope.launch {
+        sosJob?.cancel() // Cancel any previous countdown
+        sosJob = viewModelScope.launch {
             try {
-                // Start 5-second countdown
                 for (i in 5 downTo 1) {
                     _sosState.value = SOSState.Confirming(i)
                     delay(1000)
@@ -55,12 +57,11 @@ class SOSViewModel : ViewModel() {
                     "This is an emergency alert. Please contact immediately."
 
             emergencyContacts.forEach { contact ->
-                // In production, uncomment this line and handle permissions
                 // SmsManager.getDefault().sendTextMessage(contact.phoneNumber, null, message, null, null)
             }
 
             _sosState.value = SOSState.Sent
-            delay(3000) // Show "Sent" state for 3 seconds
+            delay(3000)
             _sosState.value = SOSState.Idle
         } catch (e: Exception) {
             _sosState.value = SOSState.Error("Failed to send SOS messages: ${e.message}")
@@ -68,6 +69,7 @@ class SOSViewModel : ViewModel() {
     }
 
     fun cancelSOS() {
+        sosJob?.cancel() // 🔹 Cancel the countdown coroutine
         _sosState.value = SOSState.Idle
     }
 }

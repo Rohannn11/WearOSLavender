@@ -20,11 +20,13 @@ import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.material.*
 import androidx.wear.compose.material3.IconButton
 
+
 @Composable
 fun WearAppScreen(
     locationViewModel: LocationViewModel,
     sosViewModel: SOSViewModel,
-    contactsViewModel: ContactsViewModel
+    contactsViewModel: ContactsViewModel,
+    panicModeViewModel: PanicModeViewModel  // Added PanicModeViewModel
 ) {
     var showLocation by remember { mutableStateOf(false) }
     var showAlerts by remember { mutableStateOf(false) }
@@ -43,6 +45,7 @@ fun WearAppScreen(
             onShowContacts = { showContacts = true },
             locationViewModel = locationViewModel,
             sosViewModel = sosViewModel,
+            panicModeViewModel = panicModeViewModel, // Added PanicModeViewModel
             currentLocation = location,
             contactsViewModel = contactsViewModel,
             isTracking = isTracking
@@ -102,6 +105,7 @@ fun AlertCard(alertText: String) {
     }
 }
 
+
 @Composable
 fun MainScreen(
     onShowAlerts: () -> Unit,
@@ -109,6 +113,7 @@ fun MainScreen(
     onShowContacts: () -> Unit,
     locationViewModel: LocationViewModel,
     sosViewModel: SOSViewModel,
+    panicModeViewModel: PanicModeViewModel, // Added PanicModeViewModel
     currentLocation: String,
     isTracking: Boolean,
     contactsViewModel: ContactsViewModel
@@ -126,6 +131,14 @@ fun MainScreen(
                 SOSButton(
                     viewModel = sosViewModel,
                     currentLocation = currentLocation,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
+
+            item {
+                PanicModeButton( // Panic Mode button is now used
+                    viewModel = panicModeViewModel,
+                    context = context,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
