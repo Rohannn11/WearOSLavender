@@ -29,6 +29,8 @@ class LocationViewModel : ViewModel() {
         setupLocationCallback()
     }
 
+
+
     private fun setupLocationCallback() {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
@@ -48,6 +50,14 @@ class LocationViewModel : ViewModel() {
         } else {
             fusedLocationClient?.removeLocationUpdates(locationCallback!!)
             Log.d("LocationTracking", "Tracking stopped")
+        }
+    }
+
+    fun stopTracking() {
+        if (_isTracking.value) {
+            fusedLocationClient?.removeLocationUpdates(locationCallback!!)
+            _isTracking.value = false
+            Log.d("LocationTracking", "Tracking stopped manually")
         }
     }
 
