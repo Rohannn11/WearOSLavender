@@ -11,8 +11,10 @@ class EmergencyContactManager(context: Context) {
 
     fun saveContact(contact: EmergencyContact) {
         val contacts = getContacts().toMutableList()
-        contacts.add(contact)
-        saveContacts(contacts)
+        if (contacts.size < 2) { // Ensure only 2 contacts are stored
+            contacts.add(contact)
+            saveContacts(contacts)
+        }
     }
 
     fun removeContact(contact: EmergencyContact) {
@@ -32,4 +34,3 @@ class EmergencyContactManager(context: Context) {
         prefs.edit().putString("contacts", json).apply()
     }
 }
-

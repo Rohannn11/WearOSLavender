@@ -26,6 +26,14 @@ fun ContactsScreen(
     var showAddContact by remember { mutableStateOf(false) }
     val contacts by viewModel.contacts.collectAsState()
 
+    // **Pre-Written Contact**
+    val preWrittenContacts = listOf(
+        EmergencyContact("Dr. Aisha Patel", "+1 555-678-1234"),
+        EmergencyContact("John Doe", "+91 98765 43210"),
+        EmergencyContact("Emma Watson", "+44 7456 789012")
+    )
+    val randomContact = remember { preWrittenContacts.random() } // Displayed on startup
+
     if (showAddContact) {
         AddContactDialog(
             onDismiss = { showAddContact = false },
@@ -42,12 +50,14 @@ fun ContactsScreen(
         ScalingLazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black),  // Background for better readability
+                .background(Color.Black),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -69,6 +79,15 @@ fun ContactsScreen(
                 }
             }
 
+            // **Pre-Written Contact Card**
+            item {
+                ContactCard(
+                    contact = randomContact,
+                    onDelete = {}
+                )
+            }
+
+            // **Display Contacts**
             if (contacts.isEmpty()) {
                 item {
                     Text(
@@ -79,17 +98,19 @@ fun ContactsScreen(
                         fontSize = 16.sp
                     )
                 }
-            }
-
-            items(contacts) { contact ->
-                ContactCard(
-                    contact = contact,
-                    onDelete = { viewModel.removeContact(contact) }
-                )
+            } else {
+                items(contacts.take(2)) { contact ->
+                    ContactCard(
+                        contact = contact,
+                        onDelete = { viewModel.removeContact(contact) }
+                    )
+                }
             }
         }
     }
 }
+
+
 
 @Composable
 fun ContactCard(
@@ -101,11 +122,12 @@ fun ContactCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
-            .background(Color.DarkGray)
+            .background(Color.DarkGray),
+        shape = MaterialTheme.shapes.medium
     ) {
         Row(
             modifier = Modifier
-                .padding(8.dp)
+                .padding(12.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -125,6 +147,8 @@ fun ContactCard(
     }
 }
 
+
+
 @Composable
 fun AddContactDialog(
     onDismiss: () -> Unit,
@@ -137,51 +161,69 @@ fun AddContactDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
     ) {
-        Box( // Wrap Card inside Box for background color
+        Card(
+            onClick = {},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .background(Color.DarkGray) // ✅ Correctly applies background color
+                .background(Color(0xFF1E1E1E)), // Dark Theme
+            shape = MaterialTheme.shapes.medium
         ) {
-            Card(
-                onClick = {},
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Text(
+                    text = "Add Emergency Contact",
+                    color = Color.White,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // **Stylized Name Input**
+                TextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("👤 Name", color = Color.Gray) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // **Stylized Phone Input**
+                TextField(
+                    value = phone,
+                    onValueChange = { phone = it },
+                    label = { Text("Phone Number", color = Color.Gray) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // **Buttons**
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    TextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        label = { Text("Name") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    TextField(
-                        value = phone,
-                        onValueChange = { phone = it },
-                        label = { Text("Phone") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                    Button(
+                        onClick = onDismiss,
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Gray)
                     ) {
-                        Button(
-                            onClick = onDismiss,
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Gray)
-                        ) {
-                            Text("Cancel", color = Color.White)
-                        }
-                        Button(
-                            onClick = { onAdd(name, phone) },
-                            enabled = name.isNotBlank() && phone.isNotBlank(),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green)
-                        ) {
-                            Text("Add", color = Color.Black)
-                        }
+                        Text("Cancel", color = Color.White)
+                    }
+
+                    // **Submit Contact Button**
+                    Button(
+                        onClick = {
+                            if (name.isNotBlank() && phone.isNotBlank()) {
+                                onAdd(name, phone)
+                                onDismiss() // Close dialog after adding contact
+                            }
+                        },
+                        enabled = name.isNotBlank() && phone.isNotBlank(),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green)
+                    ) {
+                        Text("Submit", color = Color.Black)
                     }
                 }
             }
