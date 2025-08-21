@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "220996924195",
+    "project_id": "wearoslavender",
+    "storage_bucket": "wearoslavender.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220996924195:android:1b054e7c7f022e2c4a5296",
+        "android_client_info": {
+          "package_name": "com.example.lavender"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCywM0JypAHr0yVp4d83Ty6fPYoafkx610"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
