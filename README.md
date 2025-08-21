@@ -34,29 +34,29 @@ WearOSLavender is a sophisticated child safety application that runs on WearOS s
 
 ## Key Features
 
-### 6E1 **Safety & Emergency**
+### **Safety & Emergency**
 - **SOS Emergency Button**: Instant emergency alerts with panic cancellation
 - **Speed Tracking**: Monitor movement speed with customizable alerts
 - **Panic Mode**: Emergency state management with automated notifications
 - **Emergency Contact Management**: Quick access to emergency contacts
 
-### 4CD **Location & Movement**
+### **Location & Movement**
 - **Real-time GPS Tracking**: Continuous location monitoring
 - **Geofencing**: Set safe zones with entry/exit notifications
 - **Location History**: Track movement patterns and visited locations
 - **Speed Monitoring**: Alert when speed thresholds are exceeded
 
-### 49A **Health Monitoring**
+### **Health Monitoring**
 - **Heart Rate Tracking**: Continuous heart rate monitoring
 - **Health Alerts**: Automated alerts for abnormal health readings
 - **Health Data Logging**: Historical health data storage and analysis
 
-### 4F1 **Communication & Connectivity**
+### **Communication & Connectivity**
 - **Contact Management**: Manage emergency and regular contacts
 - **Notification System**: Push notifications to parent devices
 - **Cloud Integration**: Secure data synchronization
 
-### 3A8 **User Experience**
+### **User Experience**
 - **Intuitive WearOS Interface**: Child-friendly UI design
 - **Theme Customization**: Personalized interface themes
 - **Activity-based Navigation**: Easy navigation between features
