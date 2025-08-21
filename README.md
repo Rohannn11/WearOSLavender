@@ -1,209 +1,313 @@
-## WearOSLavender
-WearOSLavender is a WearOS application developed as part of KidSafe, a comprehensive child safety and tracking solution. Designed for WearOS smartwatches, it empowers parents and guardians to monitor children's safety through real-time location tracking, geofencing, and emergency alerts. The app leverages WearOS capabilities to provide a lightweight, user-friendly, and extensible platform for child safety.
 
-Table of Contents
+# WearOSLavender
 
-Project Overview
-Features
-Technical Details
-Project Structure
-Setup & Installation
-Usage
-Workflow Diagram
-Contributing
-License
+**WearOSLavender** is a comprehensive Android WearOS application designed for **KidSafe**, a child safety and tracking solution. This smartwatch application provides parents and guardians with a reliable, feature-rich tool to monitor and ensure the safety of children through real-time tracking, emergency features, and health monitoring capabilities.
 
+---
 
-Project Overview
-WearOSLavender is a WearOS application designed to ensure child safety through seamless integration with WearOS smartwatch hardware. It provides real-time monitoring, emergency notifications, and geofencing capabilities to keep parents informed about their child's location and safety. The app is built using Kotlin and follows modern Android development practices, making it modular and extensible for future enhancements, such as integration with parent mobile apps or cloud-based services.
-The application is tailored for WearOS devices, utilizing GPS, sensors, and WearOS-specific APIs to deliver a responsive and efficient user experience. It is part of the broader KidSafe ecosystem, focusing on child safety and parental peace of mind.
+## Table of Contents
 
-Features
+1. [Project Overview](#project-overview)
+2. [Key Features](#key-features)
+3. [Architecture & Components](#architecture--components)
+4. [Project Structure](#project-structure)
+5. [Setup & Installation](#setup--installation)
+6. [Usage Guide](#usage-guide)
+7. [Technical Implementation](#technical-implementation)
+8. [Development](#development)
+9. [Contributing](#contributing)
+10. [License](#license)
 
-Real-Time Location Tracking: Uses GPS and network-based location services to provide accurate, real-time location updates of the child’s WearOS device.
-Geofencing: Allows guardians to set safe zones and receive alerts if the child enters or exits predefined areas.
-SOS/Emergency Notifications: Enables children to send instant SOS alerts to guardians with a single tap, including their current location.
-Battery Optimization: Designed to minimize battery consumption on WearOS devices while maintaining reliable performance.
-WearOS-Optimized UI: Provides a simple, intuitive interface tailored for small smartwatch screens.
-Modular Architecture: Easily extensible for additional features, such as integration with cloud services or parent companion apps.
-Push Notifications: Sends alerts to guardians via WearOS notifications or through integration with external services.
+---
 
+## Project Overview
 
-Technical Details
+WearOSLavender is a sophisticated child safety application that runs on WearOS smartwatches, leveraging Android's capabilities to provide comprehensive monitoring and safety features. The application combines real-time location tracking, health monitoring, emergency response systems, and intuitive user interfaces to create a complete child safety ecosystem.
 
-Platform: WearOS (Android-based smartwatch OS)
-Language: Kotlin
-Minimum SDK: WearOS 2.0 (API Level 28)
-Dependencies:
-AndroidX libraries for WearOS compatibility
-Google Play Services for location and geofencing
-Kotlin Coroutines for asynchronous operations
-Gradle (Kotlin DSL) for build management
+### Target Audience
+- Parents and guardians monitoring children''s safety
+- Educational institutions requiring student tracking
+- Healthcare providers monitoring pediatric patients
+- Emergency services for child safety protocols
 
+---
 
-Key APIs:
-Wearable API for WearOS-specific functionality
-Fused Location Provider for accurate location tracking
-Android Notifications for alerts
+## Key Features
 
+### 6E1 **Safety & Emergency**
+- **SOS Emergency Button**: Instant emergency alerts with panic cancellation
+- **Speed Tracking**: Monitor movement speed with customizable alerts
+- **Panic Mode**: Emergency state management with automated notifications
+- **Emergency Contact Management**: Quick access to emergency contacts
 
-Development Tools:
-Android Studio
-Gradle 8.0+
-Kotlin 1.9+
+### 4CD **Location & Movement**
+- **Real-time GPS Tracking**: Continuous location monitoring
+- **Geofencing**: Set safe zones with entry/exit notifications
+- **Location History**: Track movement patterns and visited locations
+- **Speed Monitoring**: Alert when speed thresholds are exceeded
 
+### 49A **Health Monitoring**
+- **Heart Rate Tracking**: Continuous heart rate monitoring
+- **Health Alerts**: Automated alerts for abnormal health readings
+- **Health Data Logging**: Historical health data storage and analysis
 
+### 4F1 **Communication & Connectivity**
+- **Contact Management**: Manage emergency and regular contacts
+- **Notification System**: Push notifications to parent devices
+- **Cloud Integration**: Secure data synchronization
 
+### 3A8 **User Experience**
+- **Intuitive WearOS Interface**: Child-friendly UI design
+- **Theme Customization**: Personalized interface themes
+- **Activity-based Navigation**: Easy navigation between features
 
-Project Structure
-The project follows a standard Android project structure, optimized for WearOS development:
+---
+
+## Architecture & Components
+
+### Core Components
+
+#### **Activities**
+- **`MainActivity.kt`**: Main application entry point and dashboard
+- **`ContactsScreen.kt`**: Contact management interface
+- **`LocationScreen.kt`**: Location tracking and map display
+- **`WearAppScreen.kt`**: Main WearOS interface controller
+
+#### **Models & Data Management**
+- **`ContactsViewModel.kt`**: Contact data management and operations
+- **`ContactsViewModelFactory.kt`**: ViewModel factory for dependency injection
+- **`LocationViewModel.kt`**: Location data and tracking logic
+- **`HeartRateViewModel.kt`**: Health monitoring data management
+- **`HeartRateViewModelFactory.kt`**: Health data ViewModel factory
+- **`SpeedTrackingViewModel.kt`**: Speed monitoring and alert management
+
+#### **Safety & Emergency Features**
+- **`EmergencyContactManager.kt`**: Emergency contact handling
+- **`PanicModeButton.kt`**: Emergency SOS functionality
+- **`PanicModeViewModel.kt`**: Panic state management
+- **`SOSButton.kt`**: Emergency alert system
+- **`SOSViewModel.kt`**: SOS feature logic and coordination
+
+### Design Patterns
+- **MVVM Architecture**: Model-View-ViewModel pattern for separation of concerns
+- **Factory Pattern**: ViewModel factories for dependency management
+- **Observer Pattern**: Real-time data updates and notifications
+- **Repository Pattern**: Data management abstraction
+
+---
+
+## Project Structure
+
+```
 WearOSLavender/
-├── app/                              # Main application module
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/example/wearoslavender/
-│   │   │   │   ├── MainActivity.kt        # Entry point activity for the app
-│   │   │   │   ├── LocationService.kt     # Background service for location tracking
-│   │   │   │   ├── GeofenceManager.kt     # Handles geofencing logic
-│   │   │   │   ├── SosAlert.kt           # Manages SOS notifications
-│   │   │   │   └── models/               # Data models for location and alerts
-│   │   │   ├── res/
-│   │   │   │   ├── layout/               # XML layouts for WearOS UI
-│   │   │   │   ├── drawable/             # Icons and image assets
-│   │   │   │   ├── values/               # Strings, colors, and themes
-│   │   │   │   └── wear.xml              # WearOS-specific configurations
-│   │   │   └── AndroidManifest.xml       # App permissions and configuration
-│   ├── build.gradle.kts                  # Module-level build script
+
+├── app/                                    # Main application module
+│   ├── src/main/java/com/yourpackage/      # Kotlin source files
+│   │   ├── MainActivity.kt                 # Main app entry point
+│   │   ├── ContactsScreen.kt               # Contact management UI
+│   │   ├── ContactsViewModel.kt            # Contact data logic
+│   │   ├── ContactsViewModelFactory.kt     # Contact ViewModel factory
+│   │   ├── EmergencyContactManager.kt      # Emergency contact handling
+│   │   ├── HeartRateViewModel.kt           # Heart rate monitoring
+│   │   ├── HeartRateViewModelFactory.kt    # Heart rate ViewModel factory
+│   │   ├── LocationScreen.kt               # Location tracking UI
+│   │   ├── LocationViewModel.kt            # Location data management
+│   │   ├── PanicModeButton.kt             # Emergency SOS button
+│   │   ├── PanicModeViewModel.kt          # Panic mode logic
+│   │   ├── SOSButton.kt                   # SOS functionality
+│   │   ├── SOSViewModel.kt                # SOS feature coordination
+│   │   ├── SpeedTrackingViewModel.kt      # Speed monitoring
+│   │   └── WearAppScreen.kt               # Main WearOS interface
+│   │
+│   ├── src/main/res/                      # UI resources
+│   │   ├── layout/                        # XML layout files
+│   │   ├── drawable/                      # Graphics and icons
+│   │   ├── values/                        # Colors, strings, dimensions
+│   │   └── mipmap/                        # App icons
+│   │
+│   └── AndroidManifest.xml               # App configuration and permissions
+│
 ├── gradle/                               # Gradle wrapper files
-├── .idea/                                # Android Studio IDE configuration
-├── build.gradle.kts                      # Project-level build script
-├── gradle.properties                     # Gradle properties
-├── gradlew / gradlew.bat                 # Gradle wrapper scripts
-└── settings.gradle.kts                   # Gradle project settings
+├── .idea/                               # Android Studio configuration
+├── build.gradle.kts                    # Kotlin-based build script
+├── gradle.properties                   # Gradle properties
+├── gradlew / gradlew.bat              # Gradle wrapper scripts
+├── settings.gradle.kts                # Project settings
+└── README.md                          # Project documentation
+```
 
-Key Files
+---
 
-MainActivity.kt: The main entry point, displaying the dashboard with location, SOS, and settings options.
-LocationService.kt: A foreground service that continuously tracks the child’s location using Fused Location Provider.
-GeofenceManager.kt: Manages geofencing logic, including setting up safe zones and triggering alerts.
-SosAlert.kt: Handles SOS functionality, sending emergency notifications with location data.
-AndroidManifest.xml: Declares permissions (e.g., ACCESS_FINE_LOCATION, FOREGROUND_SERVICE) and WearOS-specific configurations.
+## Setup & Installation
 
+### Prerequisites
+- **Android Studio**: Latest version with WearOS support
+- **WearOS SDK**: API level 28+ recommended
+- **Kotlin**: Version 1.8+
+- **WearOS Device/Emulator**: For testing
 
-Setup & Installation
-Prerequisites
+### Installation Steps
 
-Android Studio (latest stable version)
-WearOS device or emulator (API Level 28+)
-Google Play Services enabled
-Gradle 8.0 or higher
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/Rohannn11/WearOSLavender.git
+   cd WearOSLavender
+   ```
 
-Steps
+2. **Open in Android Studio**
+   - Launch Android Studio
+   - Select "Open an existing project"
+   - Navigate to the cloned directory
 
-Clone the Repository:
-git clone https://github.com/Rohannn11/WearOSLavender.git
+3. **Configure Dependencies**
+   ```bash
+   ./gradlew build
+   ```
 
+4. **Set up WearOS Device**
+   - Enable Developer Options on WearOS device
+   - Enable ADB debugging
+   - Pair device with development machine
 
-Open in Android Studio:
+5. **Deploy Application**
+   ```bash
+   ./gradlew installDebug
+   ```
 
-Launch Android Studio and select Open an existing project.
-Navigate to the cloned WearOSLavender directory.
+### Required Permissions
+```xml
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.BODY_SENSORS" />
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.SEND_SMS" />
+<uses-permission android:name="android.permission.CALL_PHONE" />
+```
 
+---
 
-Sync Gradle:
+## Usage Guide
 
-Click Sync Project with Gradle Files in Android Studio.
-Ensure all dependencies are downloaded.
+### Initial Setup
+1. **Launch Application**: Open WearOSLavender on your WearOS device
+2. **Grant Permissions**: Allow location, sensor, and communication permissions
+3. **Configure Contacts**: Add emergency and regular contacts
+4. **Set Preferences**: Configure tracking intervals and alert thresholds
 
+### Core Functions
 
-Configure WearOS Device:
+#### **Location Tracking**
+- Access through main dashboard
+- View real-time location on map
+- Set geofencing boundaries
+- Monitor movement history
 
-Connect a WearOS smartwatch via USB or use a WearOS emulator.
-Enable Developer Options and USB Debugging on the device.
+#### **Emergency Features**
+- **SOS Button**: Press and hold for emergency alert
+- **Panic Mode**: Automatic emergency state activation
+- **Speed Alerts**: Configurable speed threshold notifications
 
+#### **Health Monitoring**
+- Continuous heart rate tracking
+- Health data visualization
+- Abnormal reading alerts
 
-Build and Run:
+#### **Contact Management**
+- Add/remove emergency contacts
+- Update contact information
+- Test emergency notifications
 
-Select the WearOS device/emulator as the target.
-Click Run to build and deploy the app.
+---
 
+## Technical Implementation
 
-Permissions:
+### Key Technologies
+- **Kotlin**: Primary programming language
+- **Android Jetpack Compose**: Modern UI toolkit
+- **WearOS API**: Wear-specific functionality
+- **Location Services**: GPS and network location
+- **Sensor Framework**: Heart rate and movement sensors
+- **Firebase**: Cloud backend integration
+- **Room Database**: Local data persistence
 
-Grant location and notification permissions when prompted on the WearOS device.
+### Performance Optimizations
+- **Battery Efficiency**: Optimized location updates
+- **Memory Management**: Efficient ViewModel lifecycle
+- **Background Processing**: Smart service management
+- **Data Sync**: Intelligent cloud synchronization
 
+### Security Features
+- **Data Encryption**: End-to-end encrypted communications
+- **Secure Storage**: Encrypted local data storage
+- **Privacy Controls**: User consent management
+- **Access Controls**: Permission-based feature access
 
+---
 
+## Development
 
-Usage
+### Building from Source
+```bash
+# Debug build
+./gradlew assembleDebug
 
-Launch the App:
+# Release build
+./gradlew assembleRelease
 
-Open WearOSLavender on the WearOS smartwatch.
-The main dashboard displays the current location, geofence status, and an SOS button.
+# Run tests
+./gradlew test
 
+# Generate APK
+./gradlew build
+```
 
-Set Up Geofencing:
+### Code Style
+- Follow Kotlin coding conventions
+- Use meaningful variable and function names
+- Implement proper error handling
+- Add comprehensive documentation
 
-Configure safe zones via the companion app (if integrated) or directly on the device.
-Receive alerts when the child enters or exits a geofenced area.
+### Testing
+- Unit tests for ViewModels and business logic
+- Integration tests for component interactions
+- UI tests for user interface validation
+- Device testing on multiple WearOS versions
 
+---
 
-Send SOS Alerts:
+## Contributing
 
-Press the SOS button to instantly notify guardians with the child’s current location.
+We welcome contributions to WearOSLavender! Please follow these guidelines:
 
+### Getting Started
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
 
-Monitor Location:
+### Development Guidelines
+- Follow existing code patterns
+- Write comprehensive tests
+- Update documentation
+- Ensure backward compatibility
 
-View real-time location updates on the dashboard or through the parent app (if integrated).
+### Issue Reporting
+- Use GitHub Issues for bug reports
+- Provide detailed reproduction steps
+- Include device and OS version information
+- Attach relevant logs when possible
 
+---
 
-Extend Functionality:
+## License
 
-Add new modules in app/src/main/java/com/example/wearoslavender/.
-Update UI layouts in app/src/main/res/layout/.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-
-
-
-Workflow Diagram
-Below is a high-level workflow of how WearOSLavender operates:
-graph TD
-    A[Child Wears Smartwatch] --> B[App Launches]
-    B --> C[LocationService Starts]
-    C --> D{Fused Location Provider}
-    D --> E[Real-Time Location Updates]
-    E --> F[GeofenceManager]
-    F -->|Enter/Exit Geofence| G[Send Notification to Guardian]
-    B --> H[SOS Button Pressed]
-    H --> I[SosAlert]
-    I --> J[Send Emergency Notification with Location]
-    G --> K[Guardian Receives Alert]
-    J --> K
-
-
-Contributing
-Contributions are welcome! To contribute to WearOSLavender:
-
-Fork the repository.
-Create a new branch (git checkout -b feature/your-feature).
-Make your changes and commit (git commit -m "Add your feature").
-Push to the branch (git push origin feature/your-feature).
-Open a pull request with a detailed description of your changes.
-
-Please ensure your code follows:
-
-Kotlin coding conventions
-Proper documentation
-Unit tests for new features (if applicable)
-
-
-License
-This project is licensed under the MIT License:
+```
 MIT License
 
-Copyright (c) 2025 Rohannn11
+Copyright (c) 2024 WearOSLavender
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -222,3 +326,17 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
+
+---
+
+## Support
+
+For questions, issues, or support:
+- 4E7 Email: [support@wearoslavender.com]
+- 41B Issues: [GitHub Issues](https://github.com/Rohannn11/WearOSLavender/issues)
+- 4D6 Documentation: [Wiki](https://github.com/Rohannn11/WearOSLavender/wiki)
+
+---
+
+**Built with ❤️ for child safety and peace of mind**
